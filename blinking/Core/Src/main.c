@@ -78,6 +78,15 @@ int _write(int fd, char* ptr, int len) {
   return -1;
 }
 
+// Overwrite to detect when "BTN" is pressed
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+  printf("\rReceived GPIO Callback\n");
+  if (GPIO_Pin == BTN_Pin) {
+	  printf("\rButton pressed!\n");
+  }
+}
+
+
 /* USER CODE END 0 */
 
 /**
@@ -114,7 +123,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   // Test message. Note to self: \r makes it so that the print occurs at column 0.
-  printf("\rWorking!\n");
+  printf("\rRunning!\n");
 
   /* USER CODE END 2 */
 
@@ -123,7 +132,8 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+	  HAL_Delay(500);
+	  printf("\rTick\n");
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -278,6 +288,16 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : BTN_Pin */
+  GPIO_InitStruct.Pin = BTN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(BTN_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
