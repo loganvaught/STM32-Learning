@@ -29,8 +29,13 @@ void xv_redirect_printf(UART_HandleTypeDef *huartn) {
     }
 }
 
-void xv_print(const char *msg) {
+void xv_print(const char *format, ...) {
 	if (current_huartn != NULL) {
-		printf("%s\r\n", msg);
+	    va_list args;
+        va_start(args, format);
+        vprintf(format, args);
+        va_end(args);
+
+		printf("\r\n");
 	}
 }

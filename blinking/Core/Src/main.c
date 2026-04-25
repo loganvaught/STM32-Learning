@@ -63,12 +63,24 @@ static void MX_USART1_UART_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+// Goes from 0 -> 2
+uint8_t cycle = 0;
 
 // Overwrite to detect when "BTN" is pressed
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
   if (GPIO_Pin == BTN_Pin) {
 	  xv_print("Button pressed!");
+	  cycle += 1;
+	  cycle %= 3;
   }
+}
+
+// Detect when a timer interrupt occurs
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+    if (htim == &htim4) {
+        xv_print("Timer 4 went off");
+        xv_print("Button cycle: %u", cycle);
+    }
 }
 
 
@@ -111,6 +123,8 @@ int main(void)
   xv_redirect_printf(&huart1);
   xv_print("Working!");
 
+  HAL_TIM_Base_Start_IT(&htim4);
+
 
   /* USER CODE END 2 */
 
@@ -119,6 +133,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+
 
     /* USER CODE BEGIN 3 */
   }
@@ -277,7 +292,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : BTN_Pin */
   GPIO_InitStruct.Pin = BTN_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(BTN_GPIO_Port, &GPIO_InitStruct);
 
