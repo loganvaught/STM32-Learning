@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 
 #include "stdio.h"
+#include "xv_functions.h"
 
 /* USER CODE END Includes */
 
@@ -62,27 +63,11 @@ static void MX_USART1_UART_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-// Overwrite function to redirect printing through UART
-// Obtained from stm32world
-
-int _write(int fd, char* ptr, int len) {
-  HAL_StatusTypeDef hstatus;
-
-  if (fd == 1 || fd == 2) {
-    hstatus = HAL_UART_Transmit(&huart1, (uint8_t *) ptr, len, HAL_MAX_DELAY);
-    if (hstatus == HAL_OK)
-      return len;
-    else
-      return -1;
-  }
-  return -1;
-}
 
 // Overwrite to detect when "BTN" is pressed
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-  printf("\rReceived GPIO Callback\n");
   if (GPIO_Pin == BTN_Pin) {
-	  printf("\rButton pressed!\n");
+	  xv_print("Button pressed!");
   }
 }
 
@@ -122,8 +107,10 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  // Test message. Note to self: \r makes it so that the print occurs at column 0.
-  printf("\rRunning!\n");
+  // Use helper function to redirect printing through UART
+  xv_redirect_printf(&huart1);
+  xv_print("Working!");
+
 
   /* USER CODE END 2 */
 
@@ -132,8 +119,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  HAL_Delay(500);
-	  printf("\rTick\n");
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
