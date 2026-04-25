@@ -1,5 +1,6 @@
 # STM32-Learning
-Practice / tutorial projects and notes for learning about STM32 and embedded stuff!
+The purpose of this repo is mostly personal, including multiple projects (mostly tutorial and YouTube based) with notes for me to revisit.
+I plan to have personal and larger projects seperate in their own repos. 
 
 
 Topics:
