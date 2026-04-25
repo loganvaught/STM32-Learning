@@ -78,8 +78,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 // Detect when a timer interrupt occurs
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     if (htim == &htim4) {
-        xv_print("Timer 4 went off");
-        xv_print("Button cycle: %u", cycle);
+        HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
     }
 }
 
@@ -128,12 +127,32 @@ int main(void)
 
   /* USER CODE END 2 */
 
+  uint8_t old_cycle = cycle;
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
+    // Change the timer counter period so that the LED blinks faster
+    if (cycle != old_cycle) {
+        xv_print("Cycle change! %u", cycle);
+        switch(cycle) {
+            case 0: {
+                __HAL_TIM_SET_AUTORELOAD(&htim4, 4999);
+                break;
+            }
+            case 1: {
+                __HAL_TIM_SET_AUTORELOAD(&htim4, 2499);
+                break;
+            }
+            case 2: {
+                __HAL_TIM_SET_AUTORELOAD(&htim4, 9999);
+                break;
+            }
+        }
+        old_cycle = cycle;
+    }
 
+    /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
